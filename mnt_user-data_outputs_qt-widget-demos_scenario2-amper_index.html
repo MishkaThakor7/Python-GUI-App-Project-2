@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amper Motors — MainWindow</title>
+<link rel="stylesheet" href="../shared/qt.css">
+</head>
+<body class="s2 dark">
+<div class="win">
+  <div class="title"><span class="logo ic"></span><span id="wt">Amper Motors — Sign in</span><b title="Minimise">–</b><b title="Maximise">▢</b><b class="x" data-act="exit" title="Close">✕</b></div>
+  <div class="menubar">
+    <div class="mi">File<div class="menu"><div class="act" data-act="signout">Sign out</div><div class="sep"></div><div class="act" data-act="exit">Exit</div></div></div>
+    <div class="mi">View<div class="menu"><div class="act" data-act="palette">Switch palette (dark / light)</div></div></div>
+    <div class="mi">Help<div class="menu"><div class="act" data-act="about">About</div></div></div>
+  </div>
+
+  <div class="central" data-qt="QStackedWidget">
+
+    <!-- 0: Login (QGridLayout: logo left, group box right) -->
+    <section class="page on" id="p0">
+      <div class="row" style="max-width:640px;margin:34px auto;align-items:center;justify-content:center">
+        <div style="text-align:center"><span class="logo lg" data-qt="QLabel (pixmap)"></span><h1 class="t" style="margin-top:6px" data-qt="QLabel">Amper Motors</h1><div class="mut" data-qt="QLabel">Electric &amp; hybrid vehicles</div></div>
+        <fieldset class="qgroup" style="width:300px" data-qt="QGroupBox"><legend>Dealership login</legend>
+          <div class="form" style="margin:6px 0 12px">
+            <label for="user">Username:</label><input class="qline" id="user" autocomplete="off" data-qt="QLineEdit">
+            <label for="pass">Password:</label><input class="qline" id="pass" type="password" data-qt="QLineEdit (echoMode: Password)">
+          </div>
+          <div class="btnrow" style="margin:0"><button class="qpush def" id="loginBtn" data-qt="QPushButton">Login</button><button class="qpush" id="cancelBtn" data-qt="QPushButton">Cancel</button></div>
+          <p class="mut hint" style="margin:10px 0 0">Demo login: demo / amper123</p>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- 1: Vehicle inventory (QTabWidget + QTextBrowser) -->
+    <section class="page" id="p1">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Vehicle inventory</h1><span class="logo sm"></span></div>
+      <div class="row">
+        <div class="col" id="vTabs" data-qt="QTabWidget">
+          <div class="tabbar"><button>Details</button><button>Battery &amp; range</button><button>Features &amp; notes</button></div>
+          <div class="tabpage form" style="align-content:start">
+            <label for="vMake">Make:</label><input class="qline" id="vMake" placeholder="e.g. BYD" data-qt="QLineEdit">
+            <label for="vModel">Model:</label><input class="qline" id="vModel" placeholder="e.g. Atto 3" data-qt="QLineEdit">
+            <label for="vYear">Year:</label><input class="qline" id="vYear" value="2024" data-spin data-min="2015" data-max="2027" data-qt="QSpinBox">
+            <label for="vColour">Colour:</label><input class="qline" id="vColour" data-qt="QLineEdit">
+            <label for="vFuel">Fuel type:</label><select class="qcombo" id="vFuel" data-qt="QComboBox"><option>Electric</option><option>Plug-in hybrid</option><option>Hybrid</option></select>
+            <label for="vPlug">Charge port:</label><select class="qcombo" id="vPlug" data-qt="QComboBox"><option>CCS2</option><option>Type 2</option><option>CHAdeMO</option><option>None</option></select>
+            <label for="vPrice">Price:</label><input class="qline" id="vPrice" value="0" data-spin data-min="0" data-max="5000000" data-step="5000" data-pre="R " data-qt="QSpinBox">
+          </div>
+          <div class="tabpage">
+            <div class="form"><label for="vCond">Condition:</label><select class="qcombo" id="vCond" data-qt="QComboBox"><option>New</option><option>Demo</option><option>Used</option></select></div>
+            <div class="row" style="margin-top:12px;flex-wrap:nowrap;align-items:flex-start">
+              <div style="flex:1"><div data-qt="QLabel">Range per charge: <b id="rangeOut">400 km</b></div><div id="rangeS" style="margin-top:8px" data-qt="QSlider (horizontal)"></div></div>
+              <div style="text-align:center"><div data-qt="QLabel">Battery health: <b id="sohOut">100%</b></div><div id="sohS" style="margin:8px auto 0" data-qt="QSlider (vertical)"></div></div>
+            </div>
+          </div>
+          <div class="tabpage">
+            <div class="qframe" id="feats" data-qt="QFrame">
+              <label class="qcheck"><input type="checkbox" value="Fast DC charging" data-qt="QCheckBox">Fast DC charging</label>
+              <label class="qcheck"><input type="checkbox" value="Vehicle-to-load (V2L)" data-qt="QCheckBox">Vehicle-to-load (V2L), runs appliances during load-shedding</label>
+              <label class="qcheck"><input type="checkbox" value="Heat pump" data-qt="QCheckBox">Heat pump</label>
+              <label class="qcheck"><input type="checkbox" value="Towbar" data-qt="QCheckBox">Towbar</label></div>
+            <label class="lbl" for="vNotes" data-qt="QLabel">Notes:</label><textarea class="qtext" id="vNotes" data-qt="QPlainTextEdit"></textarea>
+          </div>
+        </div>
+        <div class="col"><div class="lbl" style="margin-top:0" data-qt="QLabel">Spec sheet (updates as you type)</div><div class="qbrowser" id="spec" style="min-height:190px" data-qt="QTextBrowser"></div></div>
+      </div>
+      <div class="btnrow"><button class="qpush" id="saveV" data-qt="QPushButton">Save vehicle</button><button class="qpush" id="clearV" data-qt="QPushButton">Clear form</button><button class="qpush def" data-go="2" data-qt="QPushButton">Next →</button></div>
+    </section>
+
+    <!-- 2: Test drives (QCalendarWidget, QTimeEdit, QDateEdit, QTreeWidget) -->
+    <section class="page" id="p2">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Test-drive bookings</h1><span class="logo sm"></span></div>
+      <div class="row">
+        <div class="col form" style="align-content:start">
+          <label for="dName">Customer:</label><input class="qline" id="dName" placeholder="Full name" data-qt="QLineEdit">
+          <label for="dContact">Contact:</label><input class="qline" id="dContact" placeholder="Phone or email" data-qt="QLineEdit">
+          <label for="dVehicle">Vehicle:</label><select class="qcombo" id="dVehicle" data-qt="QComboBox"></select>
+          <label for="dTime">Time slot:</label><input class="qline" id="dTime" data-qt="QTimeEdit">
+          <label for="dLic">Licence expires:</label><input class="qline" id="dLic" data-qt="QDateEdit">
+          <label for="dPay">Payment plan:</label><select class="qcombo" id="dPay" data-qt="QComboBox"><option>Cash</option><option selected>Finance</option><option>Lease</option></select>
+          <span></span><div id="extras"><label class="qcheck"><input type="checkbox" value="Trade-in" data-qt="QCheckBox">Trade-in</label><label class="qcheck"><input type="checkbox" value="Home charger quote" data-qt="QCheckBox">Home charger quote</label></div>
+        </div>
+        <div class="col"><div class="lbl" style="margin-top:0" data-qt="QLabel">Drive date:</div><div id="dCal" data-qt="QCalendarWidget"></div></div>
+      </div>
+      <div class="lbl" data-qt="QLabel">Booked drives:</div>
+      <div class="qview" id="tree" data-qt="QTreeWidget"></div>
+      <div class="btnrow"><button class="qpush" data-go="1" data-qt="QPushButton">← Back</button><button class="qpush" id="cancelD" data-qt="QPushButton">Cancel selected</button><button class="qpush" id="bookD" data-qt="QPushButton">Book test drive</button><button class="qpush def" data-go="3" data-qt="QPushButton">Next →</button></div>
+    </section>
+
+    <!-- 3: Dashboard (QScrollArea, QGraphicsView x2, QTextBrowser, QTabWidget) -->
+    <section class="page" id="p3">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Dashboard &amp; reports</h1><span class="logo sm"></span></div>
+      <div class="qscroll" data-qt="QScrollArea">
+        <div class="row" style="align-items:stretch">
+          <div class="col" style="flex-basis:210px"><div class="mut" data-qt="QLabel">Workshop clock</div><div class="qgv" id="gvClock" data-qt="QGraphicsView">
+            <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="var(--bd)" stroke-width="3"/><g id="faceTicks"></g>
+              <line id="hH" x1="60" y1="60" x2="60" y2="34" stroke="var(--tx)" stroke-width="4" stroke-linecap="round"/><line id="hM" x1="60" y1="60" x2="60" y2="20" stroke="var(--tx)" stroke-width="3" stroke-linecap="round"/>
+              <line id="hS" x1="60" y1="66" x2="60" y2="16" stroke="var(--hl)" stroke-width="1.6"/><circle cx="60" cy="60" r="3.5" fill="var(--hl)"/></svg></div>
+            <div class="big" style="font-size:22px;margin-top:6px" id="clockTime" data-qt="QLabel">00:00:00</div><div class="mut" id="clockDate" data-qt="QLabel"></div></div>
+          <div class="col" style="flex-basis:210px"><div class="mut" data-qt="QLabel">Vehicles in stock</div><div class="big" style="font-size:54px;margin:8px 0" id="stockNum" data-qt="QLabel">0</div><div class="mut" id="bookedTxt" data-qt="QLabel"></div></div>
+          <div class="col" style="flex-basis:300px"><div class="mut" data-qt="QLabel">Stock by fuel type</div><div class="qgv" id="gvChart" data-qt="QGraphicsView"></div></div>
+        </div>
+        <hr class="hl" data-qt="Line (horizontal)">
+        <div class="mut" data-qt="QLabel">Recent activity</div><div class="qbrowser" id="log" style="max-height:130px" data-qt="QTextBrowser"></div>
+        <fieldset class="qgroup" style="margin-top:12px" data-qt="QGroupBox"><legend>Finance estimate</legend>
+          <div class="row" style="align-items:end">
+            <div class="col" style="flex-basis:190px"><label class="lbl" style="margin-top:0" for="fVehicle">Vehicle:</label><select class="qcombo" id="fVehicle" data-qt="QComboBox"></select></div>
+            <div class="col" style="flex-basis:110px"><label class="lbl" style="margin-top:0" for="fDep">Deposit:</label><input class="qline" id="fDep" value="10" data-spin data-min="0" data-max="90" data-step="5" data-suf=" %" data-qt="QSpinBox"></div>
+            <div class="col" style="flex-basis:110px"><label class="lbl" style="margin-top:0" for="fRate">Interest rate:</label><input class="qline" id="fRate" value="11" data-spin data-min="0" data-max="25" data-suf=" %" data-qt="QSpinBox"></div>
+            <div class="col" style="flex-basis:120px"><label class="lbl" style="margin-top:0" for="fTerm">Term:</label><select class="qcombo" id="fTerm" data-qt="QComboBox"><option value="36">36 months</option><option value="48">48 months</option><option value="60" selected>60 months</option><option value="72">72 months</option></select></div>
+            <div class="col" style="flex-basis:170px"><div class="mut" data-qt="QLabel">Estimated repayment</div><div class="big" style="font-size:22px" id="fOut" data-qt="QLabel">—</div></div>
+          </div><div class="mut" id="fNote" style="margin-top:4px"></div>
+        </fieldset>
+        <div id="tTabs" style="margin-top:14px" data-qt="QTabWidget">
+          <div class="tabbar"><button>Vehicles</button><button>Test drives</button></div>
+          <div class="tabpage"><input class="qline" id="flt" placeholder="Filter…" style="margin-bottom:6px" data-qt="QLineEdit"><div class="qview" id="tblV" data-qt="QTableView"></div><div class="btnrow"><button class="qpush" id="remV" data-qt="QPushButton">Remove selected</button></div></div>
+          <div class="tabpage"><div class="qview" id="tblD" data-qt="QTableView"></div></div>
+        </div>
+      </div>
+      <div class="btnrow"><button class="qpush" data-go="2" data-qt="QPushButton">← Back</button><button class="qpush" id="sample" data-qt="QPushButton">Load sample data</button><button class="qpush" id="export" data-qt="QPushButton">Export report</button><button class="qpush def" id="exitBtn" data-qt="QPushButton">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="status"><span id="st">Ready</span><span id="stw"></span></div>
+</div>
+<script src="../shared/qt.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

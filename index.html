@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stonecroft Heritage Lettings — MainWindow</title>
+<link rel="stylesheet" href="../shared/qt.css">
+</head>
+<body class="s1 light">
+<div class="win">
+  <div class="title"><span class="logo ic"></span><span id="wt">Stonecroft Heritage Lettings — Login</span><b title="Minimise">–</b><b title="Maximise">▢</b><b class="x" data-act="exit" title="Close">✕</b></div>
+  <div class="menubar">
+    <div class="mi">File<div class="menu"><div class="act" data-act="signout">Sign out</div><div class="sep"></div><div class="act" data-act="exit">Exit</div></div></div>
+    <div class="mi">View<div class="menu"><div class="act" data-act="palette">Switch palette (light / dark)</div></div></div>
+    <div class="mi">Help<div class="menu"><div class="act" data-act="about">About</div></div></div>
+  </div>
+
+  <div class="central" data-qt="QStackedWidget" id="stack">
+
+    <!-- 0: Login -->
+    <section class="page on" id="p0">
+      <div class="login">
+        <span class="logo lg" data-qt="QLabel (pixmap)"></span>
+        <h1 class="t" data-qt="QLabel">Stonecroft Heritage Lettings</h1>
+        <p class="mut" data-qt="QLabel">Heritage Property Listings Administration System</p>
+        <div class="form" style="margin:14px 0;text-align:left">
+          <label for="user">Username:</label><input class="qline" id="user" autocomplete="off" data-qt="QLineEdit">
+          <label for="pass">Password:</label><input class="qline" id="pass" type="password" data-qt="QLineEdit (echoMode: Password)">
+        </div>
+        <div class="btnrow" style="justify-content:center"><button class="qpush def" id="loginBtn" data-qt="QPushButton">Login</button><button class="qpush" id="cancelBtn" data-qt="QPushButton">Cancel</button></div>
+        <p class="mut hint">Demo login: demo / heritage123</p>
+      </div>
+    </section>
+
+    <!-- 1: Property Register -->
+    <section class="page" id="p1">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Property Register</h1><span class="logo sm"></span></div>
+      <div class="row">
+        <div class="col form" style="align-content:start">
+          <label for="pName">Property name:</label><input class="qline" id="pName" data-qt="QLineEdit">
+          <label for="pAddr">Address:</label><input class="qline" id="pAddr" data-qt="QLineEdit">
+          <label for="pGrade">Heritage grade:</label><select class="qcombo" id="pGrade" data-qt="QComboBox"><option>Grade I</option><option>Grade IIA</option><option>Grade IIB</option><option>Grade IIIC</option></select>
+          <label for="pStyle">Style:</label><select class="qcombo" id="pStyle" data-qt="QComboBox"><option>Cape Dutch</option><option>Victorian</option><option>Edwardian</option><option>Art Deco</option></select>
+          <label for="pPermit">Section 34 permit:</label><select class="qcombo" id="pPermit" data-qt="QComboBox"><option>Not required</option><option>Applied for</option><option>Approved</option></select>
+          <label for="pRent">Monthly rent:</label><input class="qline" id="pRent" value="0" data-spin data-min="0" data-max="9999999.99" data-step="250" data-dec="2" data-pre="R " data-qt="QDoubleSpinBox">
+          <label for="pDesc">Description:</label><textarea class="qtext" id="pDesc" placeholder="Describe the property’s heritage features and condition…" data-qt="QTextEdit"></textarea>
+        </div>
+        <div class="col">
+          <label class="lbl" style="margin-top:0" data-qt="QLabel">Available from:</label><div id="pCal" data-qt="QCalendarWidget"></div>
+          <label class="lbl" for="fIn" data-qt="QLabel">Standout features:</label>
+          <div class="row" style="flex-wrap:nowrap;gap:6px"><input class="qline" id="fIn" placeholder="Request a feature for your property" data-qt="QLineEdit"><button class="qpush" id="fAdd" data-qt="QPushButton">Add</button><button class="qpush" id="fDel" data-qt="QPushButton">Remove</button></div>
+          <ul class="qlist" id="fList" data-qt="QListWidget"></ul>
+        </div>
+      </div>
+      <div class="btnrow"><button class="qpush" id="saveP" data-qt="QPushButton">Save Property</button><button class="qpush" id="clearP" data-qt="QPushButton">Clear Form</button><button class="qpush def" data-go="2" data-qt="QPushButton">Next →</button></div>
+    </section>
+
+    <!-- 2: Tenant Bookings -->
+    <section class="page" id="p2">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Tenant Bookings</h1><span class="logo sm"></span></div>
+      <div class="form" style="max-width:520px">
+        <label for="tName">Tenant name:</label><input class="qline" id="tName" placeholder="Full name" data-qt="QLineEdit">
+        <label for="tContact">Contact:</label><input class="qline" id="tContact" placeholder="Phone or email" data-qt="QLineEdit">
+        <label for="tWhen">Viewing time:</label><input class="qline" id="tWhen" data-qt="QDateTimeEdit">
+        <label for="tOcc">Occupants:</label><input class="qline" id="tOcc" value="1" data-spin data-min="1" data-max="12" data-qt="QSpinBox">
+      </div>
+      <div class="row" style="margin-top:14px">
+        <fieldset class="qgroup col" data-qt="QGroupBox"><legend>Move-in urgency</legend>
+          <label class="qradio"><input type="radio" name="urg" value="Immediate" data-qt="QRadioButton">Immediate</label>
+          <label class="qradio"><input type="radio" name="urg" value="Within 1 Month" checked data-qt="QRadioButton">Within 1 Month</label>
+          <label class="qradio"><input type="radio" name="urg" value="Within 3 Months" data-qt="QRadioButton">Within 3 Months</label></fieldset>
+        <fieldset class="qgroup col" id="amen" data-qt="QGroupBox"><legend>Desired amenities</legend>
+          <label class="qcheck"><input type="checkbox" value="Garden" data-qt="QCheckBox">Garden</label><label class="qcheck"><input type="checkbox" value="Parking" data-qt="QCheckBox">Parking</label>
+          <label class="qcheck"><input type="checkbox" value="Pet-Friendly" data-qt="QCheckBox">Pet-Friendly</label><label class="qcheck"><input type="checkbox" value="Furnished" data-qt="QCheckBox">Furnished</label></fieldset>
+      </div>
+      <div class="btnrow"><button class="qpush" data-go="1" data-qt="QPushButton">← Back</button><button class="qpush" id="bookT" data-qt="QPushButton">Book Viewing</button><button class="qpush def" data-go="3" data-qt="QPushButton">Next →</button></div>
+    </section>
+
+    <!-- 3: Dashboard -->
+    <section class="page" id="p3">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Dashboards &amp; Reports</h1><span class="logo sm"></span></div>
+      <div class="row" style="align-items:center">
+        <div style="text-align:center"><div id="escLbl" data-qt="QLabel">Escalation Value: 8%</div><div id="dial" data-qt="QDial"></div></div>
+        <div class="col"><div data-qt="QLabel">Viewing interest</div><div id="prog" data-qt="QProgressBar"></div></div>
+        <div style="text-align:center"><div data-qt="QLabel">Properties under Management</div><div id="lcdCount" data-qt="QLCDNumber"></div></div>
+        <div style="text-align:center"><div data-qt="QLabel">Current Time</div><div id="lcdClock" data-qt="QLCDNumber"></div></div>
+      </div>
+      <hr class="hl" data-qt="Line (horizontal)">
+      <div class="qview" id="tbl" data-qt="QTableWidget"></div>
+      <div class="btnrow"><button class="qpush" data-go="2" data-qt="QPushButton">← Back</button><button class="qpush" id="remP" data-qt="QPushButton">Remove selected</button><button class="qpush" id="sample" data-qt="QPushButton">Load sample data</button><button class="qpush" id="export" data-qt="QPushButton">Export Report</button><button class="qpush def" id="exitBtn" data-qt="QPushButton">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="status"><span id="st">Ready</span><span id="stw"></span></div>
+</div>
+<script src="../shared/qt.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

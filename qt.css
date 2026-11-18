@@ -1,0 +1,100 @@
+/* Qt "Fusion"-style widget set for the browser. Palette: body.light / body.dark; highlight colour per scenario. */
+:root{--win:#efefef;--base:#fff;--alt:#f5f5f5;--b1:#fdfdfd;--b2:#e1e1e1;--bd:#b4b4b4;--bdd:#8c8c8c;--tx:#1e1e1e;--dis:#8a8a8a;--grid:#dcdcdc;--h1:#f8f8f8;--h2:#dcdcdc;--desk:#6f7d84;--title:#fff;--titletx:#111;--hl:#2f6b4a;--hlt:#fff;color-scheme:light;font:13px/1.4 "Segoe UI","Noto Sans",Ubuntu,system-ui,sans-serif}
+.dark{--win:#353535;--base:#222;--alt:#2a2a2a;--b1:#4c4c4c;--b2:#3b3b3b;--bd:#1b1b1b;--bdd:#0e0e0e;--tx:#e9e9e9;--dis:#808080;--grid:#363636;--h1:#474747;--h2:#363636;--desk:#151515;--title:#1f1f1f;--titletx:#eee;color-scheme:dark}
+body.s1{--hl:#2f6b4a}body.s1.dark{--hl:#4ea67a}body.s2{--hl:#e8651b}body.s2.light{--hl:#c24f0e}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--desk);color:var(--tx)}
+.logo{display:inline-block}.logo svg{width:100%;height:100%;display:block}.logo.ic{width:18px;height:18px}.logo.sm{width:44px;height:44px}.logo.lg{width:104px;height:104px}
+
+/* window chrome: title bar, QMenuBar, QStatusBar */
+.win{max-width:1040px;margin:18px auto;background:var(--win);border:1px solid rgba(0,0,0,.55);box-shadow:0 10px 36px rgba(0,0,0,.45);display:flex;flex-direction:column;min-height:640px}
+.title{display:flex;align-items:center;gap:8px;background:var(--title);color:var(--titletx);padding-left:9px;height:32px;font-size:12px;user-select:none}
+.title #wt{flex:1}.title b{width:46px;height:32px;display:grid;place-items:center;font-weight:400;cursor:default}.title b:hover{background:rgba(128,128,128,.25)}.title b.x:hover{background:#c42b1c;color:#fff}
+.menubar{display:flex;border-bottom:1px solid var(--bd);background:var(--win);position:relative;z-index:5}
+.mi{position:relative;padding:3px 11px;cursor:default}.mi:hover,.mi.open{background:var(--hl);color:var(--hlt)}
+.menu{display:none;position:absolute;left:0;top:100%;min-width:210px;background:var(--base);color:var(--tx);border:1px solid var(--bdd);box-shadow:3px 3px 8px rgba(0,0,0,.3);padding:3px 0}
+.mi.open .menu{display:block}.act{padding:4px 22px}.act:hover{background:var(--hl);color:var(--hlt)}.sep{height:1px;background:var(--bd);margin:3px 0}
+.status{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--bd);padding:2px 9px;font-size:12px;background:var(--win)}#stw{color:var(--dis)}
+.central{flex:1;padding:12px 14px}.page{display:none}.page.on{display:block}
+
+/* layouts */
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.col{flex:1 1 300px;min-width:0}
+.form{display:grid;grid-template-columns:max-content 1fr;gap:7px 10px;align-items:center}
+.btnrow{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+h1.t{font:600 21px Georgia,serif;margin:0}.mut{color:var(--dis)}.hint{font-size:12px}
+.login{max-width:370px;margin:28px auto;text-align:center}.login .logo{margin-bottom:6px}
+.pghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.lbl{display:block;margin:8px 0 3px}.big{font:600 34px/1 Georgia,serif}.hl{height:1px;background:var(--bd);border:0;margin:10px 0}
+
+/* QPushButton, QLineEdit, QTextEdit, QComboBox */
+.qpush{min-width:80px;padding:4px 14px;border:1px solid var(--bd);border-radius:3px;background:linear-gradient(var(--b1),var(--b2));color:var(--tx);font:inherit;cursor:default}
+.qpush:hover{border-color:var(--hl)}.qpush:active{background:var(--b2)}.qpush.def{border-color:var(--hl);box-shadow:0 0 0 1px var(--hl) inset}.qpush:focus-visible{outline:1px dotted var(--hl);outline-offset:2px}
+.qline,.qtext,.qcombo{border:1px solid var(--bd);border-radius:2px;background:var(--base);color:var(--tx);font:inherit;padding:3px 5px;width:100%;min-width:0}
+.qline:focus,.qtext:focus,.qcombo:focus{outline:none;border-color:var(--hl);box-shadow:0 0 0 1px var(--hl)}
+.qtext{resize:vertical;min-height:62px}
+.qcombo{appearance:none;padding-right:24px;background:var(--base) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.7'/%3E%3C/svg%3E") no-repeat right 8px center}
+[aria-invalid=true]{border-color:#d13438!important}
+
+/* QSpinBox / QDoubleSpinBox / QDateTimeEdit */
+.spin{display:flex;position:relative;width:100%}.spin .qline{padding-right:21px}
+.spin .ar{position:absolute;right:1px;top:1px;bottom:1px;width:17px;display:flex;flex-direction:column}
+.spin .ar i{flex:1;background:linear-gradient(var(--b1),var(--b2));border-left:1px solid var(--bd);display:grid;place-items:center;cursor:default;font-style:normal;font-size:7px;line-height:1;color:var(--tx)}
+.spin .ar i:first-child{border-bottom:1px solid var(--bd)}.spin .ar i:hover{background:var(--hl);color:var(--hlt)}
+
+/* QGroupBox, QCheckBox, QRadioButton */
+.qgroup{border:1px solid var(--bd);border-radius:3px;margin:0;padding:6px 12px 8px;min-width:0}.qgroup legend{padding:0 5px;font-weight:600}
+.qcheck,.qradio{display:flex;align-items:center;gap:7px;margin:4px 0;cursor:default}
+.qcheck input,.qradio input{appearance:none;width:14px;height:14px;margin:0;border:1px solid var(--bdd);background:linear-gradient(var(--b1),var(--b2));flex:none;display:grid;place-items:center}
+.qcheck input{border-radius:2px}.qradio input{border-radius:50%}
+.qcheck input:checked::after{content:"";width:8px;height:4px;border:solid var(--hl);border-width:0 0 2px 2px;transform:rotate(-45deg) translate(1px,-1px)}
+.qradio input:checked::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--hl)}
+.qcheck input:focus-visible,.qradio input:focus-visible{outline:1px dotted var(--hl);outline-offset:2px}
+
+/* QSlider, QDial, QProgressBar, QLCDNumber */
+.slider{position:relative;touch-action:none;user-select:none;outline:none}.slider.h{height:22px;width:100%}.slider.v{width:22px;height:150px}
+.slider .gv,.slider .fl{position:absolute;border-radius:2px}.slider .gv{border:1px solid var(--bdd);background:var(--base)}.slider .fl{background:var(--hl)}
+.slider.h .gv{left:0;right:0;top:9px;height:6px}.slider.h .fl{left:0;top:10px;height:4px}
+.slider.v .gv{top:0;bottom:0;left:8px;width:6px}.slider.v .fl{left:9px;bottom:0;width:4px}
+.slider .hd{position:absolute;width:16px;height:16px;border:1px solid var(--bdd);border-radius:3px;background:linear-gradient(var(--b1),var(--b2))}
+.slider.h .hd{top:3px}.slider.v .hd{left:3px}.slider:focus .hd{border-color:var(--hl)}
+.dial{width:112px;height:112px;touch-action:none;outline:none}.dial:focus circle:first-child{stroke:var(--hl)}
+.prog{height:18px;border:1px solid var(--bdd);border-radius:3px;background:var(--base);position:relative;overflow:hidden}
+.prog i{position:absolute;inset:0 auto 0 0;width:0;background:var(--hl);transition:width .5s}.prog span{position:relative;display:block;text-align:center;line-height:16px;font-size:12px;text-shadow:0 0 3px var(--base)}
+.lcd{display:inline-block;padding:5px 9px;border:1px solid var(--bd);background:var(--base);color:var(--tx)}.lcd svg{display:block}
+
+/* QCalendarWidget */
+.cal{border:1px solid var(--bd);background:var(--base);font-size:12px}
+.cal .nav{display:flex;align-items:center;gap:3px;padding:3px;background:linear-gradient(var(--h1),var(--h2));border-bottom:1px solid var(--bd)}.cal .nav b{flex:1;text-align:center}
+.cal .nav button{border:1px solid var(--bd);background:linear-gradient(var(--b1),var(--b2));color:var(--tx);width:24px;border-radius:2px;cursor:default;font:inherit}.cal .nav button:hover{border-color:var(--hl)}
+.cal table{width:100%;border-collapse:collapse;text-align:center;table-layout:fixed}.cal th{background:var(--h2);font-weight:400;padding:2px;border-bottom:1px solid var(--bd)}
+.cal td{padding:4px 0;cursor:default}.cal td.wk{background:var(--h2);width:26px}.cal td.we{color:#d04040}.cal td.dim{color:var(--dis)}.cal td.dis{color:var(--dis);opacity:.45}
+.cal td.today{font-weight:700;text-decoration:underline}.cal td:not(.wk):not(.dis):hover{background:var(--alt)}.cal td.sel,.cal td.sel:hover{background:var(--hl);color:var(--hlt)}
+
+/* item widgets: QListWidget, QTableWidget, QTreeWidget */
+.qlist{list-style:none;margin:6px 0 0;padding:0;border:1px solid var(--bd);background:var(--base);height:112px;overflow:auto}.qlist li{padding:2px 7px}
+.qview{border:1px solid var(--bd);background:var(--base);overflow:auto;max-height:200px}
+.qtable{width:100%;border-collapse:collapse}.qtable th{background:linear-gradient(var(--h1),var(--h2));border:1px solid var(--bd);padding:3px 7px;text-align:left;font-weight:600;font-size:12px;position:sticky;top:0}
+.qtable td{border:1px solid var(--grid);padding:3px 7px}.qtable tr:nth-child(even) td{background:var(--alt)}
+.qlist li.sel,.qtable tr.sel td,.tr.sel{background:var(--hl)!important;color:var(--hlt)}
+.th,.tr{display:grid;gap:0;padding:3px 7px}.th{background:linear-gradient(var(--h1),var(--h2));border-bottom:1px solid var(--bd);font-weight:600;font-size:12px}
+.tr{cursor:default;border-bottom:1px solid var(--grid)}.tr.top{font-weight:600}.tr u{text-decoration:none;display:inline-block;width:16px;cursor:pointer}
+
+/* containers: QTabWidget, QScrollArea, QGraphicsView, QTextBrowser */
+.tabbar{display:flex;gap:2px;padding-left:4px;margin-bottom:-1px;position:relative;z-index:1}
+.tabbar button{border:1px solid var(--bd);border-bottom:0;border-radius:3px 3px 0 0;background:linear-gradient(var(--b1),var(--b2));color:var(--tx);padding:3px 14px;font:inherit;cursor:default}
+.tabbar button.on{background:var(--win);padding-bottom:6px;margin-top:-2px;font-weight:600}.tabpage{display:none;border:1px solid var(--bd);padding:10px}.tabpage.on{display:block}
+.qscroll{border:1px solid var(--bd);overflow:auto;max-height:470px;padding:10px;scrollbar-color:var(--bdd) var(--alt)}
+.qscroll::-webkit-scrollbar{width:14px;height:14px}.qscroll::-webkit-scrollbar-track{background:var(--alt)}.qscroll::-webkit-scrollbar-thumb{background:linear-gradient(var(--b1),var(--b2));border:1px solid var(--bd)}
+.qgv{border:1px solid var(--bdd);background:var(--base);box-shadow:inset 1px 1px 2px rgba(0,0,0,.18)}.qgv svg{display:block;width:100%;height:auto}
+.qbrowser{border:1px solid var(--bd);background:var(--base);padding:6px 9px;overflow:auto;min-height:92px}.qbrowser h3{margin:0 0 4px;font-size:14px}.qbrowser p{margin:3px 0}.qbrowser time{color:var(--hl);font-weight:600;margin-right:8px}
+.qframe{border:1px solid var(--bd);padding:4px 10px}
+
+/* QMessageBox */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:30;padding:10px}.ovl.on{display:flex}
+.mbox{background:var(--win);border:1px solid var(--bdd);box-shadow:0 8px 30px rgba(0,0,0,.5);min-width:300px;max-width:min(440px,94vw)}
+.mbox .mt{background:var(--title);color:var(--titletx);padding:6px 10px;font-size:12px}.mbox .mb{display:flex;gap:14px;padding:16px}.mbox .btnrow{padding:0 14px 12px;margin:0}
+.ico{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 18px Georgia,serif;flex:none}
+.ico.info,.ico.ask{background:#2d7bd4}.ico.warn{background:#d99a00}.ico.crit{background:#d13438}
+
+@media(max-width:760px){.win{margin:0;border:0;min-height:100vh}.form{grid-template-columns:1fr}.central{padding:10px}}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}

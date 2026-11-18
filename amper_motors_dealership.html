@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amper Motors — MainWindow</title>
+<style>
+/* Qt "Fusion"-style widget set for the browser. Palette: body.light / body.dark; highlight colour per scenario. */
+:root{--win:#efefef;--base:#fff;--alt:#f5f5f5;--b1:#fdfdfd;--b2:#e1e1e1;--bd:#b4b4b4;--bdd:#8c8c8c;--tx:#1e1e1e;--dis:#8a8a8a;--grid:#dcdcdc;--h1:#f8f8f8;--h2:#dcdcdc;--desk:#6f7d84;--title:#fff;--titletx:#111;--hl:#2f6b4a;--hlt:#fff;color-scheme:light;font:13px/1.4 "Segoe UI","Noto Sans",Ubuntu,system-ui,sans-serif}
+.dark{--win:#353535;--base:#222;--alt:#2a2a2a;--b1:#4c4c4c;--b2:#3b3b3b;--bd:#1b1b1b;--bdd:#0e0e0e;--tx:#e9e9e9;--dis:#808080;--grid:#363636;--h1:#474747;--h2:#363636;--desk:#151515;--title:#1f1f1f;--titletx:#eee;color-scheme:dark}
+body.s1{--hl:#2f6b4a}body.s1.dark{--hl:#4ea67a}body.s2{--hl:#e8651b}body.s2.light{--hl:#c24f0e}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--desk);color:var(--tx)}
+.logo{display:inline-block}.logo svg{width:100%;height:100%;display:block}.logo.ic{width:18px;height:18px}.logo.sm{width:44px;height:44px}.logo.lg{width:104px;height:104px}
+
+/* window chrome: title bar, QMenuBar, QStatusBar */
+.win{max-width:1040px;margin:18px auto;background:var(--win);border:1px solid rgba(0,0,0,.55);box-shadow:0 10px 36px rgba(0,0,0,.45);display:flex;flex-direction:column;min-height:640px}
+.title{display:flex;align-items:center;gap:8px;background:var(--title);color:var(--titletx);padding-left:9px;height:32px;font-size:12px;user-select:none}
+.title #wt{flex:1}.title b{width:46px;height:32px;display:grid;place-items:center;font-weight:400;cursor:default}.title b:hover{background:rgba(128,128,128,.25)}.title b.x:hover{background:#c42b1c;color:#fff}
+.menubar{display:flex;border-bottom:1px solid var(--bd);background:var(--win);position:relative;z-index:5}
+.mi{position:relative;padding:3px 11px;cursor:default}.mi:hover,.mi.open{background:var(--hl);color:var(--hlt)}
+.menu{display:none;position:absolute;left:0;top:100%;min-width:210px;background:var(--base);color:var(--tx);border:1px solid var(--bdd);box-shadow:3px 3px 8px rgba(0,0,0,.3);padding:3px 0}
+.mi.open .menu{display:block}.act{padding:4px 22px}.act:hover{background:var(--hl);color:var(--hlt)}.sep{height:1px;background:var(--bd);margin:3px 0}
+.status{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--bd);padding:2px 9px;font-size:12px;background:var(--win)}#stw{color:var(--dis)}
+.central{flex:1;padding:12px 14px}.page{display:none}.page.on{display:block}
+
+/* layouts */
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}.col{flex:1 1 300px;min-width:0}
+.form{display:grid;grid-template-columns:max-content 1fr;gap:7px 10px;align-items:center}
+.btnrow{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+h1.t{font:600 21px Georgia,serif;margin:0}.mut{color:var(--dis)}.hint{font-size:12px}
+.login{max-width:370px;margin:28px auto;text-align:center}.login .logo{margin-bottom:6px}
+.pghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.lbl{display:block;margin:8px 0 3px}.big{font:600 34px/1 Georgia,serif}.hl{height:1px;background:var(--bd);border:0;margin:10px 0}
+
+/* QPushButton, QLineEdit, QTextEdit, QComboBox */
+.qpush{min-width:80px;padding:4px 14px;border:1px solid var(--bd);border-radius:3px;background:linear-gradient(var(--b1),var(--b2));color:var(--tx);font:inherit;cursor:default}
+.qpush:hover{border-color:var(--hl)}.qpush:active{background:var(--b2)}.qpush.def{border-color:var(--hl);box-shadow:0 0 0 1px var(--hl) inset}.qpush:focus-visible{outline:1px dotted var(--hl);outline-offset:2px}
+.qline,.qtext,.qcombo{border:1px solid var(--bd);border-radius:2px;background:var(--base);color:var(--tx);font:inherit;padding:3px 5px;width:100%;min-width:0}
+.qline:focus,.qtext:focus,.qcombo:focus{outline:none;border-color:var(--hl);box-shadow:0 0 0 1px var(--hl)}
+.qtext{resize:vertical;min-height:62px}
+.qcombo{appearance:none;padding-right:24px;background:var(--base) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.7'/%3E%3C/svg%3E") no-repeat right 8px center}
+[aria-invalid=true]{border-color:#d13438!important}
+
+/* QSpinBox / QDoubleSpinBox / QDateTimeEdit */
+.spin{display:flex;position:relative;width:100%}.spin .qline{padding-right:21px}
+.spin .ar{position:absolute;right:1px;top:1px;bottom:1px;width:17px;display:flex;flex-direction:column}
+.spin .ar i{flex:1;background:linear-gradient(var(--b1),var(--b2));border-left:1px solid var(--bd);display:grid;place-items:center;cursor:default;font-style:normal;font-size:7px;line-height:1;color:var(--tx)}
+.spin .ar i:first-child{border-bottom:1px solid var(--bd)}.spin .ar i:hover{background:var(--hl);color:var(--hlt)}
+
+/* QGroupBox, QCheckBox, QRadioButton */
+.qgroup{border:1px solid var(--bd);border-radius:3px;margin:0;padding:6px 12px 8px;min-width:0}.qgroup legend{padding:0 5px;font-weight:600}
+.qcheck,.qradio{display:flex;align-items:center;gap:7px;margin:4px 0;cursor:default}
+.qcheck input,.qradio input{appearance:none;width:14px;height:14px;margin:0;border:1px solid var(--bdd);background:linear-gradient(var(--b1),var(--b2));flex:none;display:grid;place-items:center}
+.qcheck input{border-radius:2px}.qradio input{border-radius:50%}
+.qcheck input:checked::after{content:"";width:8px;height:4px;border:solid var(--hl);border-width:0 0 2px 2px;transform:rotate(-45deg) translate(1px,-1px)}
+.qradio input:checked::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--hl)}
+.qcheck input:focus-visible,.qradio input:focus-visible{outline:1px dotted var(--hl);outline-offset:2px}
+
+/* QSlider, QDial, QProgressBar, QLCDNumber */
+.slider{position:relative;touch-action:none;user-select:none;outline:none}.slider.h{height:22px;width:100%}.slider.v{width:22px;height:150px}
+.slider .gv,.slider .fl{position:absolute;border-radius:2px}.slider .gv{border:1px solid var(--bdd);background:var(--base)}.slider .fl{background:var(--hl)}
+.slider.h .gv{left:0;right:0;top:9px;height:6px}.slider.h .fl{left:0;top:10px;height:4px}
+.slider.v .gv{top:0;bottom:0;left:8px;width:6px}.slider.v .fl{left:9px;bottom:0;width:4px}
+.slider .hd{position:absolute;width:16px;height:16px;border:1px solid var(--bdd);border-radius:3px;background:linear-gradient(var(--b1),var(--b2))}
+.slider.h .hd{top:3px}.slider.v .hd{left:3px}.slider:focus .hd{border-color:var(--hl)}
+.dial{width:112px;height:112px;touch-action:none;outline:none}.dial:focus circle:first-child{stroke:var(--hl)}
+.prog{height:18px;border:1px solid var(--bdd);border-radius:3px;background:var(--base);position:relative;overflow:hidden}
+.prog i{position:absolute;inset:0 auto 0 0;width:0;background:var(--hl);transition:width .5s}.prog span{position:relative;display:block;text-align:center;line-height:16px;font-size:12px;text-shadow:0 0 3px var(--base)}
+.lcd{display:inline-block;padding:5px 9px;border:1px solid var(--bd);background:var(--base);color:var(--tx)}.lcd svg{display:block}
+
+/* QCalendarWidget */
+.cal{border:1px solid var(--bd);background:var(--base);font-size:12px}
+.cal .nav{display:flex;align-items:center;gap:3px;padding:3px;background:linear-gradient(var(--h1),var(--h2));border-bottom:1px solid var(--bd)}.cal .nav b{flex:1;text-align:center}
+.cal .nav button{border:1px solid var(--bd);background:linear-gradient(var(--b1),var(--b2));color:var(--tx);width:24px;border-radius:2px;cursor:default;font:inherit}.cal .nav button:hover{border-color:var(--hl)}
+.cal table{width:100%;border-collapse:collapse;text-align:center;table-layout:fixed}.cal th{background:var(--h2);font-weight:400;padding:2px;border-bottom:1px solid var(--bd)}
+.cal td{padding:4px 0;cursor:default}.cal td.wk{background:var(--h2);width:26px}.cal td.we{color:#d04040}.cal td.dim{color:var(--dis)}.cal td.dis{color:var(--dis);opacity:.45}
+.cal td.today{font-weight:700;text-decoration:underline}.cal td:not(.wk):not(.dis):hover{background:var(--alt)}.cal td.sel,.cal td.sel:hover{background:var(--hl);color:var(--hlt)}
+
+/* item widgets: QListWidget, QTableWidget, QTreeWidget */
+.qlist{list-style:none;margin:6px 0 0;padding:0;border:1px solid var(--bd);background:var(--base);height:112px;overflow:auto}.qlist li{padding:2px 7px}
+.qview{border:1px solid var(--bd);background:var(--base);overflow:auto;max-height:200px}
+.qtable{width:100%;border-collapse:collapse}.qtable th{background:linear-gradient(var(--h1),var(--h2));border:1px solid var(--bd);padding:3px 7px;text-align:left;font-weight:600;font-size:12px;position:sticky;top:0}
+.qtable td{border:1px solid var(--grid);padding:3px 7px}.qtable tr:nth-child(even) td{background:var(--alt)}
+.qlist li.sel,.qtable tr.sel td,.tr.sel{background:var(--hl)!important;color:var(--hlt)}
+.th,.tr{display:grid;gap:0;padding:3px 7px}.th{background:linear-gradient(var(--h1),var(--h2));border-bottom:1px solid var(--bd);font-weight:600;font-size:12px}
+.tr{cursor:default;border-bottom:1px solid var(--grid)}.tr.top{font-weight:600}.tr u{text-decoration:none;display:inline-block;width:16px;cursor:pointer}
+
+/* containers: QTabWidget, QScrollArea, QGraphicsView, QTextBrowser */
+.tabbar{display:flex;gap:2px;padding-left:4px;margin-bottom:-1px;position:relative;z-index:1}
+.tabbar button{border:1px solid var(--bd);border-bottom:0;border-radius:3px 3px 0 0;background:linear-gradient(var(--b1),var(--b2));color:var(--tx);padding:3px 14px;font:inherit;cursor:default}
+.tabbar button.on{background:var(--win);padding-bottom:6px;margin-top:-2px;font-weight:600}.tabpage{display:none;border:1px solid var(--bd);padding:10px}.tabpage.on{display:block}
+.qscroll{border:1px solid var(--bd);overflow:auto;max-height:470px;padding:10px;scrollbar-color:var(--bdd) var(--alt)}
+.qscroll::-webkit-scrollbar{width:14px;height:14px}.qscroll::-webkit-scrollbar-track{background:var(--alt)}.qscroll::-webkit-scrollbar-thumb{background:linear-gradient(var(--b1),var(--b2));border:1px solid var(--bd)}
+.qgv{border:1px solid var(--bdd);background:var(--base);box-shadow:inset 1px 1px 2px rgba(0,0,0,.18)}.qgv svg{display:block;width:100%;height:auto}
+.qbrowser{border:1px solid var(--bd);background:var(--base);padding:6px 9px;overflow:auto;min-height:92px}.qbrowser h3{margin:0 0 4px;font-size:14px}.qbrowser p{margin:3px 0}.qbrowser time{color:var(--hl);font-weight:600;margin-right:8px}
+.qframe{border:1px solid var(--bd);padding:4px 10px}
+
+/* QMessageBox */
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:30;padding:10px}.ovl.on{display:flex}
+.mbox{background:var(--win);border:1px solid var(--bdd);box-shadow:0 8px 30px rgba(0,0,0,.5);min-width:300px;max-width:min(440px,94vw)}
+.mbox .mt{background:var(--title);color:var(--titletx);padding:6px 10px;font-size:12px}.mbox .mb{display:flex;gap:14px;padding:16px}.mbox .btnrow{padding:0 14px 12px;margin:0}
+.ico{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 18px Georgia,serif;flex:none}
+.ico.info,.ico.ask{background:#2d7bd4}.ico.warn{background:#d99a00}.ico.crit{background:#d13438}
+
+@media(max-width:760px){.win{margin:0;border:0;min-height:100vh}.form{grid-template-columns:1fr}.central{padding:10px}}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+</style>
+</head>
+<body class="s2 dark">
+<div class="win">
+  <div class="title"><span class="logo ic"></span><span id="wt">Amper Motors — Sign in</span><b title="Minimise">–</b><b title="Maximise">▢</b><b class="x" data-act="exit" title="Close">✕</b></div>
+  <div class="menubar">
+    <div class="mi">File<div class="menu"><div class="act" data-act="signout">Sign out</div><div class="sep"></div><div class="act" data-act="exit">Exit</div></div></div>
+    <div class="mi">View<div class="menu"><div class="act" data-act="palette">Switch palette (dark / light)</div></div></div>
+    <div class="mi">Help<div class="menu"><div class="act" data-act="about">About</div></div></div>
+  </div>
+
+  <div class="central" data-qt="QStackedWidget">
+
+    <!-- 0: Login (QGridLayout: logo left, group box right) -->
+    <section class="page on" id="p0">
+      <div class="row" style="max-width:640px;margin:34px auto;align-items:center;justify-content:center">
+        <div style="text-align:center"><span class="logo lg" data-qt="QLabel (pixmap)"></span><h1 class="t" style="margin-top:6px" data-qt="QLabel">Amper Motors</h1><div class="mut" data-qt="QLabel">Electric &amp; hybrid vehicles</div></div>
+        <fieldset class="qgroup" style="width:300px" data-qt="QGroupBox"><legend>Dealership login</legend>
+          <div class="form" style="margin:6px 0 12px">
+            <label for="user">Username:</label><input class="qline" id="user" autocomplete="off" data-qt="QLineEdit">
+            <label for="pass">Password:</label><input class="qline" id="pass" type="password" data-qt="QLineEdit (echoMode: Password)">
+          </div>
+          <div class="btnrow" style="margin:0"><button class="qpush def" id="loginBtn" data-qt="QPushButton">Login</button><button class="qpush" id="cancelBtn" data-qt="QPushButton">Cancel</button></div>
+          <p class="mut hint" style="margin:10px 0 0">Demo login: demo / amper123</p>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- 1: Vehicle inventory (QTabWidget + QTextBrowser) -->
+    <section class="page" id="p1">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Vehicle inventory</h1><span class="logo sm"></span></div>
+      <div class="row">
+        <div class="col" id="vTabs" data-qt="QTabWidget">
+          <div class="tabbar"><button>Details</button><button>Battery &amp; range</button><button>Features &amp; notes</button></div>
+          <div class="tabpage form" style="align-content:start">
+            <label for="vMake">Make:</label><input class="qline" id="vMake" placeholder="e.g. BYD" data-qt="QLineEdit">
+            <label for="vModel">Model:</label><input class="qline" id="vModel" placeholder="e.g. Atto 3" data-qt="QLineEdit">
+            <label for="vYear">Year:</label><input class="qline" id="vYear" value="2024" data-spin data-min="2015" data-max="2027" data-qt="QSpinBox">
+            <label for="vColour">Colour:</label><input class="qline" id="vColour" data-qt="QLineEdit">
+            <label for="vFuel">Fuel type:</label><select class="qcombo" id="vFuel" data-qt="QComboBox"><option>Electric</option><option>Plug-in hybrid</option><option>Hybrid</option></select>
+            <label for="vPlug">Charge port:</label><select class="qcombo" id="vPlug" data-qt="QComboBox"><option>CCS2</option><option>Type 2</option><option>CHAdeMO</option><option>None</option></select>
+            <label for="vPrice">Price:</label><input class="qline" id="vPrice" value="0" data-spin data-min="0" data-max="5000000" data-step="5000" data-pre="R " data-qt="QSpinBox">
+          </div>
+          <div class="tabpage">
+            <div class="form"><label for="vCond">Condition:</label><select class="qcombo" id="vCond" data-qt="QComboBox"><option>New</option><option>Demo</option><option>Used</option></select></div>
+            <div class="row" style="margin-top:12px;flex-wrap:nowrap;align-items:flex-start">
+              <div style="flex:1"><div data-qt="QLabel">Range per charge: <b id="rangeOut">400 km</b></div><div id="rangeS" style="margin-top:8px" data-qt="QSlider (horizontal)"></div></div>
+              <div style="text-align:center"><div data-qt="QLabel">Battery health: <b id="sohOut">100%</b></div><div id="sohS" style="margin:8px auto 0" data-qt="QSlider (vertical)"></div></div>
+            </div>
+          </div>
+          <div class="tabpage">
+            <div class="qframe" id="feats" data-qt="QFrame">
+              <label class="qcheck"><input type="checkbox" value="Fast DC charging" data-qt="QCheckBox">Fast DC charging</label>
+              <label class="qcheck"><input type="checkbox" value="Vehicle-to-load (V2L)" data-qt="QCheckBox">Vehicle-to-load (V2L), runs appliances during load-shedding</label>
+              <label class="qcheck"><input type="checkbox" value="Heat pump" data-qt="QCheckBox">Heat pump</label>
+              <label class="qcheck"><input type="checkbox" value="Towbar" data-qt="QCheckBox">Towbar</label></div>
+            <label class="lbl" for="vNotes" data-qt="QLabel">Notes:</label><textarea class="qtext" id="vNotes" data-qt="QPlainTextEdit"></textarea>
+          </div>
+        </div>
+        <div class="col"><div class="lbl" style="margin-top:0" data-qt="QLabel">Spec sheet (updates as you type)</div><div class="qbrowser" id="spec" style="min-height:190px" data-qt="QTextBrowser"></div></div>
+      </div>
+      <div class="btnrow"><button class="qpush" id="saveV" data-qt="QPushButton">Save vehicle</button><button class="qpush" id="clearV" data-qt="QPushButton">Clear form</button><button class="qpush def" data-go="2" data-qt="QPushButton">Next →</button></div>
+    </section>
+
+    <!-- 2: Test drives (QCalendarWidget, QTimeEdit, QDateEdit, QTreeWidget) -->
+    <section class="page" id="p2">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Test-drive bookings</h1><span class="logo sm"></span></div>
+      <div class="row">
+        <div class="col form" style="align-content:start">
+          <label for="dName">Customer:</label><input class="qline" id="dName" placeholder="Full name" data-qt="QLineEdit">
+          <label for="dContact">Contact:</label><input class="qline" id="dContact" placeholder="Phone or email" data-qt="QLineEdit">
+          <label for="dVehicle">Vehicle:</label><select class="qcombo" id="dVehicle" data-qt="QComboBox"></select>
+          <label for="dTime">Time slot:</label><input class="qline" id="dTime" data-qt="QTimeEdit">
+          <label for="dLic">Licence expires:</label><input class="qline" id="dLic" data-qt="QDateEdit">
+          <label for="dPay">Payment plan:</label><select class="qcombo" id="dPay" data-qt="QComboBox"><option>Cash</option><option selected>Finance</option><option>Lease</option></select>
+          <span></span><div id="extras"><label class="qcheck"><input type="checkbox" value="Trade-in" data-qt="QCheckBox">Trade-in</label><label class="qcheck"><input type="checkbox" value="Home charger quote" data-qt="QCheckBox">Home charger quote</label></div>
+        </div>
+        <div class="col"><div class="lbl" style="margin-top:0" data-qt="QLabel">Drive date:</div><div id="dCal" data-qt="QCalendarWidget"></div></div>
+      </div>
+      <div class="lbl" data-qt="QLabel">Booked drives:</div>
+      <div class="qview" id="tree" data-qt="QTreeWidget"></div>
+      <div class="btnrow"><button class="qpush" data-go="1" data-qt="QPushButton">← Back</button><button class="qpush" id="cancelD" data-qt="QPushButton">Cancel selected</button><button class="qpush" id="bookD" data-qt="QPushButton">Book test drive</button><button class="qpush def" data-go="3" data-qt="QPushButton">Next →</button></div>
+    </section>
+
+    <!-- 3: Dashboard (QScrollArea, QGraphicsView x2, QTextBrowser, QTabWidget) -->
+    <section class="page" id="p3">
+      <div class="pghead"><h1 class="t" data-qt="QLabel">Dashboard &amp; reports</h1><span class="logo sm"></span></div>
+      <div class="qscroll" data-qt="QScrollArea">
+        <div class="row" style="align-items:stretch">
+          <div class="col" style="flex-basis:210px"><div class="mut" data-qt="QLabel">Workshop clock</div><div class="qgv" id="gvClock" data-qt="QGraphicsView">
+            <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="var(--bd)" stroke-width="3"/><g id="faceTicks"></g>
+              <line id="hH" x1="60" y1="60" x2="60" y2="34" stroke="var(--tx)" stroke-width="4" stroke-linecap="round"/><line id="hM" x1="60" y1="60" x2="60" y2="20" stroke="var(--tx)" stroke-width="3" stroke-linecap="round"/>
+              <line id="hS" x1="60" y1="66" x2="60" y2="16" stroke="var(--hl)" stroke-width="1.6"/><circle cx="60" cy="60" r="3.5" fill="var(--hl)"/></svg></div>
+            <div class="big" style="font-size:22px;margin-top:6px" id="clockTime" data-qt="QLabel">00:00:00</div><div class="mut" id="clockDate" data-qt="QLabel"></div></div>
+          <div class="col" style="flex-basis:210px"><div class="mut" data-qt="QLabel">Vehicles in stock</div><div class="big" style="font-size:54px;margin:8px 0" id="stockNum" data-qt="QLabel">0</div><div class="mut" id="bookedTxt" data-qt="QLabel"></div></div>
+          <div class="col" style="flex-basis:300px"><div class="mut" data-qt="QLabel">Stock by fuel type</div><div class="qgv" id="gvChart" data-qt="QGraphicsView"></div></div>
+        </div>
+        <hr class="hl" data-qt="Line (horizontal)">
+        <div class="mut" data-qt="QLabel">Recent activity</div><div class="qbrowser" id="log" style="max-height:130px" data-qt="QTextBrowser"></div>
+        <fieldset class="qgroup" style="margin-top:12px" data-qt="QGroupBox"><legend>Finance estimate</legend>
+          <div class="row" style="align-items:end">
+            <div class="col" style="flex-basis:190px"><label class="lbl" style="margin-top:0" for="fVehicle">Vehicle:</label><select class="qcombo" id="fVehicle" data-qt="QComboBox"></select></div>
+            <div class="col" style="flex-basis:110px"><label class="lbl" style="margin-top:0" for="fDep">Deposit:</label><input class="qline" id="fDep" value="10" data-spin data-min="0" data-max="90" data-step="5" data-suf=" %" data-qt="QSpinBox"></div>
+            <div class="col" style="flex-basis:110px"><label class="lbl" style="margin-top:0" for="fRate">Interest rate:</label><input class="qline" id="fRate" value="11" data-spin data-min="0" data-max="25" data-suf=" %" data-qt="QSpinBox"></div>
+            <div class="col" style="flex-basis:120px"><label class="lbl" style="margin-top:0" for="fTerm">Term:</label><select class="qcombo" id="fTerm" data-qt="QComboBox"><option value="36">36 months</option><option value="48">48 months</option><option value="60" selected>60 months</option><option value="72">72 months</option></select></div>
+            <div class="col" style="flex-basis:170px"><div class="mut" data-qt="QLabel">Estimated repayment</div><div class="big" style="font-size:22px" id="fOut" data-qt="QLabel">—</div></div>
+          </div><div class="mut" id="fNote" style="margin-top:4px"></div>
+        </fieldset>
+        <div id="tTabs" style="margin-top:14px" data-qt="QTabWidget">
+          <div class="tabbar"><button>Vehicles</button><button>Test drives</button></div>
+          <div class="tabpage"><input class="qline" id="flt" placeholder="Filter…" style="margin-bottom:6px" data-qt="QLineEdit"><div class="qview" id="tblV" data-qt="QTableView"></div><div class="btnrow"><button class="qpush" id="remV" data-qt="QPushButton">Remove selected</button></div></div>
+          <div class="tabpage"><div class="qview" id="tblD" data-qt="QTableView"></div></div>
+        </div>
+      </div>
+      <div class="btnrow"><button class="qpush" data-go="2" data-qt="QPushButton">← Back</button><button class="qpush" id="sample" data-qt="QPushButton">Load sample data</button><button class="qpush" id="export" data-qt="QPushButton">Export report</button><button class="qpush def" id="exitBtn" data-qt="QPushButton">Exit</button></div>
+    </section>
+  </div>
+
+  <div class="status"><span id="st">Ready</span><span id="stw"></span></div>
+</div>
+<script>
+/* Qt Designer widget set (QDial, QLCDNumber, QCalendarWidget, QDateTimeEdit, QSlider, QTreeWidget ...)
+   redrawn in plain HTML/CSS/JS. No libraries. Hover any widget to see its Qt class in the status bar. */
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const p2 = n => String(n).padStart(2, "0");
+const isoLocal = d => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+const fmtD = d => d.toLocaleDateString("en-ZA", { day: "2-digit", month: "long", year: "numeric" });
+const money = n => "R" + Math.round(n).toLocaleString("en-ZA");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const fire = (el, t = "input") => el.dispatchEvent(new Event(t, { bubbles: true }));
+const Qt = { logged: false };
+
+/* QStatusBar: messages on the left, the Qt class under the mouse on the right */
+let stT;
+Qt.status = (m, ms = 5000) => { const s = $("#st"); s.textContent = m; clearTimeout(stT); stT = setTimeout(() => s.textContent = "Ready", ms); };
+document.addEventListener("mouseover", e => { const w = e.target.closest && e.target.closest("[data-qt]"), s = $("#stw"); if (w && s) s.textContent = w.dataset.qt + (w.id ? "  ·  " + w.id : ""); });
+
+/* QMessageBox */
+Qt.msg = (kind, title, text, cb, buttons) => {
+  let o = $("#ovl"); if (!o) { o = document.createElement("div"); o.id = "ovl"; o.className = "ovl"; document.body.appendChild(o); }
+  o.innerHTML = `<div class="mbox" role="dialog" aria-modal="true"><div class="mt">${esc(title)}</div><div class="mb"><div class="ico ${kind}">${{ info: "i", warn: "!", crit: "×", ask: "?" }[kind]}</div><div>${esc(text)}</div></div>` +
+    `<div class="btnrow">${buttons.map((b, i) => `<button class="qpush${i ? "" : " def"}" data-i="${i}">${b}</button>`).join("")}</div></div>`;
+  o.classList.add("on"); $("button", o).focus();
+  $$("button", o).forEach(b => b.onclick = () => { o.classList.remove("on"); if (cb) cb(+b.dataset.i); });
+};
+Qt.info = (t, m, cb) => Qt.msg("info", t, m, cb, ["OK"]);
+Qt.warn = (t, m, cb) => Qt.msg("warn", t, m, cb, ["OK"]);
+Qt.ask = (t, m, yes) => Qt.msg("ask", t, m, i => { if (i === 0) yes(); }, ["Yes", "No"]);
+
+/* QMenuBar */
+Qt.menus = h => {
+  $$(".mi").forEach(m => m.addEventListener("click", e => { if (e.target.closest(".act")) return; const was = m.classList.contains("open"); $$(".mi").forEach(x => x.classList.remove("open")); if (!was) m.classList.add("open"); }));
+  $$(".act").forEach(a => a.addEventListener("click", () => { $$(".mi").forEach(x => x.classList.remove("open")); if (h[a.dataset.act]) h[a.dataset.act](); }));
+  $$(".title [data-act]").forEach(b => b.addEventListener("click", () => h[b.dataset.act] && h[b.dataset.act]()));
+  document.addEventListener("click", e => { if (!e.target.closest(".mi")) $$(".mi").forEach(x => x.classList.remove("open")); });
+};
+Qt.palette = () => document.body.classList.toggle("dark") + document.body.classList.toggle("light");
+
+/* QStackedWidget */
+Qt.stack = onGo => {
+  const pages = $$(".central > .page");
+  const go = n => { if (n > 0 && !Qt.logged) return; pages.forEach((p, i) => p.classList.toggle("on", i === n)); if (onGo) onGo(n); window.scrollTo(0, 0); };
+  $$("[data-go]").forEach(b => b.addEventListener("click", () => go(+b.dataset.go)));
+  return go;
+};
+
+/* QSpinBox / QDoubleSpinBox:  <input class="qline" data-spin data-min data-max data-step data-dec data-pre data-suf> */
+Qt.spin = el => {
+  const D = el.dataset, n = (v, d) => v === undefined ? d : +v, min = n(D.min, 0), max = n(D.max, 100), step = n(D.step, 1), dec = n(D.dec, 0), pre = D.pre || "", suf = D.suf || "";
+  const w = document.createElement("div"); w.className = "spin"; el.replaceWith(w); w.append(el);
+  const ar = document.createElement("div"); ar.className = "ar"; ar.innerHTML = "<i>▲</i><i>▼</i>"; w.append(ar);
+  const parse = () => { const v = parseFloat(String(el.value).replace(/[^0-9.\-]/g, "")); return isNaN(v) ? min : v; };
+  const set = v => { v = Math.min(max, Math.max(min, v)); el.value = pre + v.toFixed(dec) + suf; };
+  const bump = d => { set(parse() + d * step); fire(el); };
+  set(parse());
+  ar.children[0].onclick = () => bump(1); ar.children[1].onclick = () => bump(-1);
+  el.addEventListener("keydown", e => { if (e.key === "ArrowUp") { e.preventDefault(); bump(1); } if (e.key === "ArrowDown") { e.preventDefault(); bump(-1); } });
+  el.addEventListener("blur", () => { set(parse()); fire(el, "change"); });
+  el.addEventListener("wheel", e => { if (document.activeElement === el) { e.preventDefault(); bump(e.deltaY < 0 ? 1 : -1); } }, { passive: false });
+  el._get = parse; el._set = set;
+};
+Qt.val = el => el._get(); Qt.setVal = (el, v) => el._set(v);
+
+/* QDateTimeEdit / QDateEdit / QTimeEdit: sections are highlighted and stepped with the arrows, like Qt */
+Qt.dte = (el, { fmt, init, min, clamp, step = 1 }) => {
+  const w = document.createElement("div"); w.className = "spin"; el.replaceWith(w); w.append(el);
+  const ar = document.createElement("div"); ar.className = "ar"; ar.innerHTML = "<i>▲</i><i>▼</i>"; w.append(ar);
+  el.readOnly = true;
+  const lim = clamp || (x => min && x < min ? new Date(min) : x);
+  let d = lim(new Date(init)), si = 0, secs = [];
+  const render = () => {
+    const V = { dd: p2(d.getDate()), MM: p2(d.getMonth() + 1), yyyy: String(d.getFullYear()), HH: p2(d.getHours()), mm: p2(d.getMinutes()) };
+    secs = []; let out = "", last = 0;
+    fmt.replace(/dd|MM|yyyy|HH|mm/g, (t, i) => { out += fmt.slice(last, i); secs.push({ t, s: out.length, l: V[t].length }); out += V[t]; last = i + t.length; });
+    el.value = out + fmt.slice(last);
+  };
+  const hl = () => el.setSelectionRange(secs[si].s, secs[si].s + secs[si].l);
+  const pick = () => { si = Math.max(0, secs.findIndex(s => el.selectionStart >= s.s && el.selectionStart <= s.s + s.l)); hl(); };
+  const bump = dir => {
+    const t = secs[si].t, x = new Date(d);
+    if (t === "dd") x.setDate(x.getDate() + dir); if (t === "MM") x.setMonth(x.getMonth() + dir); if (t === "yyyy") x.setFullYear(x.getFullYear() + dir);
+    if (t === "HH") x.setHours(x.getHours() + dir); if (t === "mm") x.setMinutes(x.getMinutes() + dir * step);
+    d = lim(x); render(); hl(); fire(el);
+  };
+  ar.children[0].onclick = () => { bump(1); el.focus(); }; ar.children[1].onclick = () => { bump(-1); el.focus(); };
+  el.addEventListener("mouseup", pick); el.addEventListener("focus", () => setTimeout(pick, 0));
+  el.addEventListener("keydown", e => {
+    if (e.key === "ArrowUp") { e.preventDefault(); bump(1); } else if (e.key === "ArrowDown") { e.preventDefault(); bump(-1); }
+    else if (e.key === "ArrowRight" && si < secs.length - 1) { e.preventDefault(); si++; hl(); } else if (e.key === "ArrowLeft" && si > 0) { e.preventDefault(); si--; hl(); }
+  });
+  render(); el._get = () => new Date(d); el._set = x => { d = lim(new Date(x)); render(); };
+};
+Qt.dateOf = el => el._get();
+
+/* QCalendarWidget: week numbers, weekends in red, minimum date */
+Qt.calendar = (el, { min, onChange } = {}) => {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  let sel = new Date(today), vy = sel.getFullYear(), vm = sel.getMonth();
+  const MON = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const wk = d => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
+  function draw() {
+    const start = new Date(vy, vm, 1 - ((new Date(vy, vm, 1).getDay() + 6) % 7));
+    let h = `<div class="cal"><div class="nav"><button type="button" data-n="-12">«</button><button type="button" data-n="-1">‹</button><b>${MON[vm]} ${vy}</b><button type="button" data-n="1">›</button><button type="button" data-n="12">»</button></div><table><tr><th></th>${["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(x => `<th>${x}</th>`).join("")}</tr>`;
+    for (let r = 0; r < 6; r++) {
+      const rs = new Date(start.getFullYear(), start.getMonth(), start.getDate() + r * 7);
+      h += `<tr><td class="wk">${wk(new Date(rs.getFullYear(), rs.getMonth(), rs.getDate() + 3))}</td>`;
+      for (let c = 0; c < 7; c++) {
+        const d = new Date(rs.getFullYear(), rs.getMonth(), rs.getDate() + c);
+        const cls = [d.getMonth() !== vm && "dim", c > 4 && "we", min && d < min && "dis", d.getTime() === sel.getTime() && "sel", d.getTime() === today.getTime() && "today"].filter(Boolean).join(" ");
+        h += `<td class="${cls}" data-t="${d.getTime()}">${d.getDate()}</td>`;
+      }
+      h += "</tr>";
+    }
+    el.innerHTML = h + "</table></div>";
+    $$(".nav button", el).forEach(b => b.onclick = () => { const d = new Date(vy, vm + +b.dataset.n, 1); vy = d.getFullYear(); vm = d.getMonth(); draw(); });
+    $$("td[data-t]", el).forEach(td => td.onclick = () => { if (td.classList.contains("dis")) return; sel = new Date(+td.dataset.t); vy = sel.getFullYear(); vm = sel.getMonth(); draw(); if (onChange) onChange(new Date(sel)); });
+  }
+  draw();
+  return { get: () => new Date(sel), set: d => { sel = new Date(d); vy = sel.getFullYear(); vm = sel.getMonth(); draw(); } };
+};
+
+/* QSlider (horizontal or vertical) */
+Qt.slider = (el, { min, max, step = 1, value, v = false, onChange }) => {
+  el.classList.add("slider", v ? "v" : "h"); el.tabIndex = 0; el.setAttribute("role", "slider");
+  el.innerHTML = '<div class="gv"></div><div class="fl"></div><div class="hd"></div>';
+  let val = value, drag = false; const hd = $(".hd", el), fl = $(".fl", el);
+  const draw = () => { const f = (val - min) / (max - min); if (v) { hd.style.bottom = `calc((100% - 16px) * ${f})`; fl.style.height = f * 100 + "%"; } else { hd.style.left = `calc((100% - 16px) * ${f})`; fl.style.width = f * 100 + "%"; } el.setAttribute("aria-valuenow", val); };
+  const set = x => { x = Math.min(max, Math.max(min, Math.round(x / step) * step)); const c = x !== val; val = x; draw(); if (c) { if (onChange) onChange(val); fire(el); } };
+  const from = e => { const r = el.getBoundingClientRect(), f = v ? 1 - (e.clientY - r.top - 8) / (r.height - 16) : (e.clientX - r.left - 8) / (r.width - 16); set(min + Math.min(1, Math.max(0, f)) * (max - min)); };
+  el.addEventListener("pointerdown", e => { drag = true; el.setPointerCapture(e.pointerId); el.focus(); from(e); });
+  el.addEventListener("pointermove", e => { if (drag) from(e); }); el.addEventListener("pointerup", () => drag = false);
+  el.addEventListener("keydown", e => {
+    const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 10, PageDown: -10 }[e.key];
+    if (k) { e.preventDefault(); set(val + k * step); } if (e.key === "Home") set(min); if (e.key === "End") set(max);
+  });
+  draw(); return { get: () => val, set };
+};
+
+/* QDial */
+Qt.dial = (el, { min, max, value, onChange }) => {
+  el.classList.add("dial"); el.tabIndex = 0; el.setAttribute("role", "slider");
+  let val = value, drag = false, n = "";
+  for (let i = 0; i <= max - min; i++) { const a = (-135 + i * 270 / (max - min)) * Math.PI / 180; n += `<line x1="${50 + 40 * Math.sin(a)}" y1="${50 - 40 * Math.cos(a)}" x2="${50 + 46 * Math.sin(a)}" y2="${50 - 46 * Math.cos(a)}" stroke="var(--bdd)" stroke-width="1.5"/>`; }
+  el.innerHTML = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="var(--b1)" stroke="var(--bdd)" stroke-width="2"/>${n}<circle r="5" fill="var(--hl)"/><text x="50" y="56" text-anchor="middle" font-size="16" font-weight="600" fill="var(--tx)"></text></svg>`;
+  const h = $("circle[r='5']", el), t = $("text", el);
+  const draw = () => { const a = (-135 + (val - min) * 270 / (max - min)) * Math.PI / 180; h.setAttribute("cx", 50 + 24 * Math.sin(a)); h.setAttribute("cy", 50 - 24 * Math.cos(a)); t.textContent = val; el.setAttribute("aria-valuenow", val); };
+  const set = x => { x = Math.min(max, Math.max(min, Math.round(x))); const c = x !== val; val = x; draw(); if (c) { if (onChange) onChange(val); fire(el); } };
+  const from = e => { const r = el.getBoundingClientRect(), a = Math.atan2(e.clientX - (r.left + r.width / 2), -(e.clientY - (r.top + r.height / 2))) * 180 / Math.PI; set(min + (Math.min(135, Math.max(-135, a)) + 135) / 270 * (max - min)); };
+  el.addEventListener("pointerdown", e => { drag = true; el.setPointerCapture(e.pointerId); el.focus(); from(e); });
+  el.addEventListener("pointermove", e => { if (drag) from(e); }); el.addEventListener("pointerup", () => drag = false);
+  el.addEventListener("keydown", e => { const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (k) { e.preventDefault(); set(val + k); } });
+  draw(); return { get: () => val, set };
+};
+
+/* QProgressBar */
+Qt.progress = (el, v, text) => { el.classList.add("prog"); el.innerHTML = `<i style="width:${v}%"></i><span>${esc(text ?? v + "%")}</span>`; };
+
+/* QLCDNumber: seven-segment digits */
+const SEG = { 0: "abcdef", 1: "bc", 2: "abged", 3: "abgcd", 4: "fgbc", 5: "afgcd", 6: "afgedc", 7: "abc", 8: "abcdefg", 9: "abcdfg", "-": "g" };
+const SL = { a: [4, 3, 16, 3], g: [4, 18, 16, 18], d: [4, 33, 16, 33], f: [2, 5, 2, 16], b: [18, 5, 18, 16], e: [2, 20, 2, 31], c: [18, 20, 18, 31] };
+Qt.lcd = (el, str) => {
+  let x = 0, s = "";
+  for (const ch of String(str)) {
+    if (ch === ":") { s += `<circle cx="${x + 4}" cy="12" r="2.2"/><circle cx="${x + 4}" cy="25" r="2.2"/>`; x += 9; }
+    else { for (const k of SEG[ch] || "") s += `<line x1="${x + SL[k][0]}" y1="${SL[k][1]}" x2="${x + SL[k][2]}" y2="${SL[k][3]}"/>`; x += 24; }
+  }
+  el.classList.add("lcd"); el.innerHTML = `<svg viewBox="0 0 ${x} 36" height="38" width="${Math.round(x * 38 / 36)}" stroke="currentColor" fill="currentColor" stroke-width="3" stroke-linecap="round">${s}</svg>`;
+};
+
+/* item widgets: QTableWidget, QListWidget, QTreeWidget */
+Qt.table = (el, cols, rows) => {
+  el.innerHTML = rows.length ? `<table class="qtable"><thead><tr>${cols.map(c => `<th>${esc(c[0])}</th>`).join("")}</tr></thead><tbody>${rows.map((r, i) => `<tr data-i="${i}">${cols.map(c => `<td>${esc(typeof c[1] === "function" ? c[1](r) : r[c[1]])}</td>`).join("")}</tr>`).join("")}</tbody></table>` : '<div class="mut" style="padding:8px">No items.</div>';
+};
+Qt.pick = (el, sel) => el.addEventListener("click", e => { const r = e.target.closest(sel); if (!r || !el.contains(r)) return; $$(".sel", el).forEach(x => x.classList.remove("sel")); r.classList.add("sel"); });
+Qt.picked = el => { const r = $(".sel", el); return r ? +r.dataset.i : -1; };
+Qt.tree = (el, cols, groups, empty) => {
+  const T = `grid-template-columns:${cols.map(c => c[1]).join(" ")}`;
+  el.innerHTML = `<div class="th" style="${T}">${cols.map(c => `<span>${esc(c[0])}</span>`).join("")}</div>` + (groups.length ? groups.map((g, gi) =>
+    `<div class="tr top" style="${T}" data-g="${gi}"><span><u>▾</u>${esc(g.c[0])}</span>${g.c.slice(1).map(x => `<span>${esc(x)}</span>`).join("")}</div>` +
+    g.kids.map(k => `<div class="tr kid" style="${T}" data-g="${gi}" data-id="${k.id}">${k.c.map((x, i) => `<span${i ? "" : ' style="padding-left:20px"'}>${esc(x)}</span>`).join("")}</div>`).join("")).join("") : `<div class="mut" style="padding:8px">${esc(empty || "Nothing here yet.")}</div>`);
+  $$(".tr.top u", el).forEach(u => u.onclick = e => { e.stopPropagation(); const open = u.textContent === "▾"; u.textContent = open ? "▸" : "▾"; $$(`.kid[data-g="${u.closest(".tr").dataset.g}"]`, el).forEach(k => k.hidden = open); });
+  $$(".tr", el).forEach(r => r.onclick = () => { $$(".tr.sel", el).forEach(x => x.classList.remove("sel")); r.classList.add("sel"); });
+};
+Qt.treePicked = el => { const r = $(".tr.kid.sel", el); return r ? r.dataset.id : null; };
+
+/* QTabWidget */
+Qt.tabs = (el, cb) => {
+  const bs = $$(".tabbar button", el), ps = $$(".tabpage", el);
+  const sel = i => { bs.forEach((b, j) => b.classList.toggle("on", i === j)); ps.forEach((p, j) => p.classList.toggle("on", i === j)); if (cb) cb(i); };
+  bs.forEach((b, i) => b.onclick = () => sel(i)); sel(0); return sel;
+};
+
+/* save a text file (works as a local file and as a shared link) */
+Qt.save = async (name, text) => {
+  let dl = null; try { dl = window.claude ? await window.claude.use("downloads") : null; } catch (e) {}
+  if (dl) { try { await dl.save({ filename: name, data: text }); } catch (e) {} return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/plain" })); a.download = name; a.click(); URL.revokeObjectURL(a.href);
+};
+</script>
+<script>
+// Demo login. Change before real use. (This check runs in the browser, so it is not real security.)
+const USERNAME = "demo", PASSWORD = "amper123";
+const KEY = "amper_qt_v1", TITLES = ["Sign in", "Vehicle inventory", "Test-drive bookings", "Dashboard & reports"];
+let db = { vehicles: [], drives: [], log: [] };
+try { const s = localStorage.getItem(KEY); if (s) db = { ...db, ...JSON.parse(s) }; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} };
+const label = v => `${v.year} ${v.make} ${v.model}`;
+
+/* logo (car + bolt), shown as a QLabel pixmap */
+const LOGO = `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="var(--base)" stroke="var(--hl)" stroke-width="3"/><path d="M22 62v-6c0-3 2-5 5-6l8-1 8-10c1-1 2-2 4-2h12c2 0 3 1 4 2l8 10 4 1c3 1 5 3 5 6v6z" fill="var(--hl)"/><circle cx="35" cy="64" r="7" fill="var(--base)" stroke="var(--hl)" stroke-width="3"/><circle cx="67" cy="64" r="7" fill="var(--base)" stroke="var(--hl)" stroke-width="3"/><polygon points="55,39 46,52 52,52 49,61 60,46 54,46" fill="var(--base)"/></svg>`;
+$$(".logo").forEach(e => e.innerHTML = LOGO);
+
+/* activity log (QTextBrowser) */
+function logEvent(m) { db.log.unshift({ t: new Date().toISOString(), msg: m }); db.log = db.log.slice(0, 30); save(); }
+const drawLog = () => $("#log").innerHTML = db.log.slice(0, 8).map(l => `<p><time>${new Date(l.t).toTimeString().slice(0, 5)}</time>${esc(l.msg)}</p>`).join("") || '<p class="mut">No activity yet.</p>';
+
+/* window: pages, menus */
+const go = Qt.stack(n => { $("#wt").textContent = "Amper Motors — " + TITLES[n]; if (n === 2) { fillVehicles(); drawTree(); } if (n === 3) refresh(); });
+const signOut = () => { Qt.logged = false; go(0); Qt.status("Signed out."); };
+Qt.menus({ signout: signOut, exit: signOut, palette: Qt.palette,
+  about: () => Qt.info("About Amper Motors", "A four-page dealership demo built only from Qt Designer widgets: QTabWidget, QSlider, QTextBrowser, QTimeEdit, QDateEdit, QCalendarWidget, QTreeWidget, QGraphicsView and QScrollArea. Hover any widget to see its class in the status bar.") });
+
+/* page 0: login */
+$("#loginBtn").onclick = () => {
+  if ($("#user").value.trim().toLowerCase() === USERNAME && $("#pass").value === PASSWORD) {
+    Qt.logged = true; $("#user").value = $("#pass").value = "";
+    Qt.info("Login Successful", "Welcome to Amper Motors.", () => go(1));
+  } else { $("#pass").value = ""; Qt.warn("Login Failed", "Incorrect username or password. Please try again."); }
+};
+$("#cancelBtn").onclick = () => { $("#user").value = $("#pass").value = ""; };
+$("#pass").addEventListener("keydown", e => { if (e.key === "Enter") $("#loginBtn").click(); });
+$$("[data-spin]").forEach(Qt.spin);
+
+/* page 1: inventory with a live spec sheet */
+Qt.tabs($("#vTabs"));
+const rangeS = Qt.slider($("#rangeS"), { min: 0, max: 800, step: 10, value: 400 });
+const sohS = Qt.slider($("#sohS"), { min: 60, max: 100, value: 100, v: true });
+function syncV() {
+  $("#rangeOut").textContent = rangeS.get() + " km"; $("#sohOut").textContent = sohS.get() + "%";
+  const f = $$("#feats input:checked").map(c => c.value), colour = $("#vColour").value.trim(), plug = $("#vPlug").value, notes = $("#vNotes").value.trim();
+  const name = [Qt.val($("#vYear")), $("#vMake").value.trim(), $("#vModel").value.trim()].filter(Boolean).join(" ") || "New vehicle";
+  $("#spec").innerHTML = `<h3>${esc(name)}</h3><p>${esc($("#vFuel").value)} · ${esc($("#vCond").value)}${colour ? " · " + esc(colour) : ""}</p>` +
+    `<p><b>${rangeS.get()} km</b> range · battery health <b>${sohS.get()}%</b>${plug !== "None" ? " · " + esc(plug) + " port" : ""}</p><p><b>${money(Qt.val($("#vPrice")))}</b></p>` +
+    `<p class="mut">${f.length ? esc(f.join(", ")) : "No features selected"}</p>${notes ? "<p>" + esc(notes) + "</p>" : ""}`;
+}
+["input", "change"].forEach(ev => $("#p1").addEventListener(ev, syncV));
+function clearV() {
+  ["#vMake", "#vModel", "#vColour", "#vNotes"].forEach(s => $(s).value = ""); Qt.setVal($("#vYear"), 2024); Qt.setVal($("#vPrice"), 0);
+  $("#vFuel").selectedIndex = $("#vPlug").selectedIndex = $("#vCond").selectedIndex = 0; $$("#feats input").forEach(c => c.checked = false); rangeS.set(400); sohS.set(100); syncV();
+}
+$("#clearV").onclick = clearV;
+$("#saveV").onclick = () => {
+  const make = $("#vMake").value.trim(), model = $("#vModel").value.trim(), price = Qt.val($("#vPrice"));
+  if (!make || !model || price <= 0) return Qt.warn("Missing Information", "Please enter a make, a model and a price above zero.");
+  const v = { id: uid(), make, model, year: Qt.val($("#vYear")), colour: $("#vColour").value.trim(), fuel: $("#vFuel").value, plug: $("#vPlug").value, condition: $("#vCond").value,
+    range: rangeS.get(), soh: sohS.get(), price, features: $$("#feats input:checked").map(c => c.value), notes: $("#vNotes").value.trim() };
+  db.vehicles.push(v); logEvent("Vehicle added: " + label(v)); clearV(); Qt.info("Vehicle Saved", `${label(v)} has been added to stock.`);
+};
+
+/* page 2: test drives */
+const today = new Date(); today.setHours(0, 0, 0, 0);
+const cal = Qt.calendar($("#dCal"), { min: today, onChange: d => Qt.status("Test drive on " + fmtD(d), 4000) });
+const inHours = x => { const m = x.getHours() * 60 + x.getMinutes(); if (m < 480) x.setHours(8, 0); if (m > 1020) x.setHours(17, 0); return x; };
+Qt.dte($("#dTime"), { fmt: "HH:mm", init: new Date(2000, 0, 1, 10, 0), clamp: inHours, step: 15 });
+const nextYear = new Date(today); nextYear.setFullYear(today.getFullYear() + 1);
+Qt.dte($("#dLic"), { fmt: "dd/MM/yyyy", init: nextYear, min: today });
+function fillVehicles() {
+  ["#dVehicle", "#fVehicle"].forEach(s => {
+    const el = $(s), keep = el.value;
+    el.innerHTML = db.vehicles.length ? db.vehicles.map(v => `<option value="${v.id}">${esc(label(v))}</option>`).join("") : '<option value="">No vehicles yet</option>';
+    if (db.vehicles.some(v => v.id === keep)) el.value = keep;
+  });
+  calc();
+}
+function drawTree() {
+  const days = [...new Set(db.drives.map(d => d.date))].sort();
+  Qt.tree($("#tree"), [["Date", "1.1fr"], ["Customer", "1.3fr"], ["Vehicle", "1.8fr"], ["Time", ".7fr"], ["Payment", ".8fr"]],
+    days.map(day => ({ c: [day, "", "", "", ""], kids: db.drives.filter(d => d.date === day).sort((a, b) => a.time.localeCompare(b.time)).map(d => ({ id: d.id, c: ["", d.customer, d.vehicle, d.time, d.payment] })) })), "No test drives booked yet.");
+}
+$("#bookD").onclick = () => {
+  const name = $("#dName").value.trim(), contact = $("#dContact").value.trim(), v = db.vehicles.find(x => x.id === $("#dVehicle").value);
+  if (!name || !contact) return Qt.warn("Missing Information", "Please enter a customer name and a contact detail.");
+  if (!v) return Qt.warn("No Vehicle", "Add a vehicle to stock first, then book the test drive.");
+  const t = Qt.dateOf($("#dTime")), time = `${p2(t.getHours())}:${p2(t.getMinutes())}`, when = isoLocal(cal.get());
+  if (isoLocal(Qt.dateOf($("#dLic"))) < when) return Qt.warn("Licence Expired", "That licence expires before the test drive date. A valid licence is needed to drive.");
+  db.drives.push({ id: uid(), customer: name, contact, vehicleId: v.id, vehicle: label(v), date: when, time, payment: $("#dPay").value, extras: $$("#extras input:checked").map(c => c.value).join(", ") || "None" });
+  logEvent(`Test drive booked: ${name}, ${label(v)}`); save(); $("#dName").value = $("#dContact").value = ""; $$("#extras input").forEach(c => c.checked = false); drawTree();
+  Qt.info("Test Drive Booked", `${name} is booked for the ${label(v)} on ${fmtD(cal.get())} at ${time}.`);
+};
+$("#cancelD").onclick = () => {
+  const id = Qt.treePicked($("#tree")); if (!id) return Qt.info("Nothing selected", "Select a booking (not a date) in the list first.");
+  Qt.ask("Cancel booking", "Cancel the selected test drive?", () => { db.drives = db.drives.filter(d => d.id !== id); logEvent("Test drive cancelled"); save(); drawTree(); });
+};
+
+/* page 3: dashboard */
+Qt.tabs($("#tTabs"));
+let face = ""; for (let i = 0; i < 12; i++) face += `<line x1="60" y1="9" x2="60" y2="${i % 3 ? 14 : 18}" stroke="var(--dis)" stroke-width="${i % 3 ? 1.5 : 2.5}" transform="rotate(${i * 30} 60 60)"/>`;
+$("#faceTicks").innerHTML = face;
+function tick() {
+  const d = new Date(), s = d.getSeconds(), m = d.getMinutes() + s / 60, h = d.getHours() % 12 + m / 60;
+  $("#hH").setAttribute("transform", `rotate(${h * 30} 60 60)`); $("#hM").setAttribute("transform", `rotate(${m * 6} 60 60)`); $("#hS").setAttribute("transform", `rotate(${s * 6} 60 60)`);
+  $("#clockTime").textContent = d.toTimeString().slice(0, 8); $("#clockDate").textContent = d.toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" });
+}
+tick(); setInterval(tick, 1000);
+function drawChart() {
+  const kinds = ["Electric", "Plug-in hybrid", "Hybrid"], counts = kinds.map(k => db.vehicles.filter(v => v.fuel === k).length), max = Math.max(1, ...counts);
+  $("#gvChart").innerHTML = `<svg viewBox="0 0 300 150" role="img" aria-label="Stock by fuel type">` + kinds.map((k, i) => {
+    const h = Math.round(counts[i] / max * 90), x = 30 + i * 90;
+    return `<rect x="${x}" y="${110 - h}" width="60" height="${h}" fill="var(--hl)"/><text x="${x + 30}" y="${104 - h}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--tx)">${counts[i]}</text><text x="${x + 30}" y="130" text-anchor="middle" font-size="10" fill="var(--dis)">${k}</text>`;
+  }).join("") + `<line x1="15" y1="110" x2="285" y2="110" stroke="var(--bd)"/></svg>`;
+}
+function calc() {
+  const v = db.vehicles.find(x => x.id === $("#fVehicle").value);
+  if (!v) { $("#fOut").textContent = "—"; $("#fNote").textContent = "Add a vehicle to estimate repayments."; return; }
+  const dep = Qt.val($("#fDep")), n = +$("#fTerm").value, rate = Qt.val($("#fRate")), r = rate / 1200, P = v.price * (1 - dep / 100);
+  $("#fOut").textContent = money(r ? P * r / (1 - Math.pow(1 + r, -n)) : P / n) + " / month"; $("#fNote").textContent = `${money(P)} financed over ${n} months at ${rate}%.`;
+}
+["#fVehicle", "#fTerm", "#fDep", "#fRate"].forEach(s => $(s).addEventListener("input", calc));
+$("#fTerm").addEventListener("change", calc); $("#fVehicle").addEventListener("change", calc);
+const VCOLS = [["Vehicle", label], ["Fuel", "fuel"], ["Condition", "condition"], ["Range", v => v.range + " km"], ["Battery", v => v.soh + "%"], ["Price", v => money(v.price)]];
+const DCOLS = [["Customer", "customer"], ["Vehicle", "vehicle"], ["Date", "date"], ["Time", "time"], ["Payment", "payment"]];
+Qt.pick($("#tblV"), "tr[data-i]");
+const shown = () => { const q = $("#flt").value.trim().toLowerCase(); return db.vehicles.map((v, i) => [v, i]).filter(([v]) => JSON.stringify(v).toLowerCase().includes(q)); };
+function drawTables() {
+  const rows = shown(); Qt.table($("#tblV"), VCOLS, rows.map(r => r[0]));
+  $$("#tblV tr[data-i]").forEach((tr, k) => tr.dataset.i = rows[k][1]);
+  Qt.table($("#tblD"), DCOLS, [...db.drives].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)));
+}
+$("#flt").addEventListener("input", drawTables);
+function refresh() {
+  const n = db.vehicles.length, booked = new Set(db.drives.map(d => d.vehicleId)), b = db.vehicles.filter(v => booked.has(v.id)).length;
+  $("#stockNum").textContent = n; $("#bookedTxt").textContent = n ? `${b} of ${n} have a test drive booked` : "No stock yet";
+  drawChart(); drawLog(); fillVehicles(); drawTables();
+}
+$("#remV").onclick = () => {
+  const i = Qt.picked($("#tblV")); if (i < 0) return Qt.info("Nothing selected", "Select a vehicle in the table first.");
+  Qt.ask("Remove vehicle", `Remove ${label(db.vehicles[i])} from stock?`, () => { const v = db.vehicles[i]; db.vehicles.splice(i, 1); db.drives = db.drives.filter(d => d.vehicleId !== v.id); logEvent("Vehicle removed: " + label(v)); save(); refresh(); });
+};
+$("#sample").onclick = () => {
+  if (!db.vehicles.some(v => v.model === "Atto 3")) {
+    const a = { id: uid(), make: "BYD", model: "Atto 3", year: 2024, colour: "Surf blue", fuel: "Electric", plug: "CCS2", condition: "New", range: 420, soh: 100, price: 559900, features: ["Fast DC charging", "Vehicle-to-load (V2L)"], notes: "" };
+    db.vehicles.push(a,
+      { id: uid(), make: "Volvo", model: "XC40 Recharge", year: 2023, colour: "Fjord blue", fuel: "Electric", plug: "CCS2", condition: "Demo", range: 440, soh: 96, price: 789000, features: ["Heat pump"], notes: "" },
+      { id: uid(), make: "Nissan", model: "Leaf", year: 2019, colour: "Pearl white", fuel: "Electric", plug: "CHAdeMO", condition: "Used", range: 240, soh: 82, price: 259900, features: [], notes: "" });
+    db.drives.push({ id: uid(), customer: "Kagiso Mahlangu", contact: "071 926 4408", vehicleId: a.id, vehicle: label(a), date: isoLocal(today), time: "10:30", payment: "Finance", extras: "Home charger quote" });
+    logEvent("Sample data loaded");
+  }
+  save(); refresh(); Qt.status("Sample data loaded.");
+};
+$("#export").onclick = () => {
+  Qt.save("amper_motors_report.txt", ["AMPER MOTORS — REPORT", "=".repeat(36), "", `Vehicles in stock: ${db.vehicles.length}`,
+    ...db.vehicles.map(v => `  - ${label(v)}, ${v.fuel}, ${v.condition}, battery ${v.soh}%, ${money(v.price)}`), "", `Test drives booked: ${db.drives.length}`,
+    ...db.drives.map(d => `  - ${d.customer}: ${d.vehicle} on ${d.date} at ${d.time} (${d.payment})`)].join("\n"));
+  Qt.status("Report exported.");
+};
+$("#exitBtn").onclick = signOut;
+syncV(); drawLog(); calc();
+</script>
+</body>
+</html>
